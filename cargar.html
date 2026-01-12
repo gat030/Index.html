@@ -1,34 +1,63 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Video en App Inventor</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
-  <style>
-    body {
-      margin: 0;
-      background: #0f172a;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+<title>Video</title>
 
-    video {
-      width: 100%;
-      max-width: 720px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.5);
-    }
-  </style>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: black;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    pointer-events: none; /* BLOQUEA interacción */
+  }
+</style>
 </head>
+
 <body>
 
-  <video controls autoplay>
-    <source src="cargar.mp4" type="video/mp4">
-    Tu navegador no soporta video.
-  </video>
+<video id="vid" autoplay muted playsinline>
+  <source src="cargar.mp4" type="video/mp4">
+</video>
+
+<script>
+  const v = document.getElementById("vid");
+
+  // Forzar reproducción
+  v.play().catch(() => {});
+
+  // Evitar pausa
+  v.addEventListener("pause", () => {
+    v.play();
+  });
+
+  // Evitar adelantar
+  v.addEventListener("seeking", () => {
+    v.currentTime = 0;
+  });
+
+  // Forzar fullscreen
+  function full() {
+    if (v.requestFullscreen) v.requestFullscreen();
+    else if (v.webkitRequestFullscreen) v.webkitRequestFullscreen();
+  }
+
+  document.addEventListener("click", full);
+</script>
 
 </body>
 </html>
