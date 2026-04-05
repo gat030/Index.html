@@ -1,0 +1,70 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Subir Imagen</title>
+</head>
+<body>
+
+  <h2>Subir una foto</h2>
+
+  <input type="file" id="imagen" accept="image/*">
+  <br><br>
+  <button onclick="subirImagen()">Subir Imagen</button>
+
+  <p id="estado"></p>
+  <img id="preview" width="200" style="display:none;"/>
+
+  <script>
+    const API_KEY = "7c5016836a04a9f4ff6d6bad4d64f851"; // 🔥 PON TU API KEY AQUÍ
+
+    function subirImagen() {
+      const input = document.getElementById("imagen");
+      const file = input.files[0];
+
+      if (!file) {
+        alert("Selecciona una imagen primero");
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = function () {
+        const base64 = reader.result.split(',')[1];
+
+        document.getElementById("estado").innerText = "Subiendo...";
+
+        fetch("https://api.imgbb.com/1/upload?key=" + API_KEY, {
+          method: "POST",
+          body: new URLSearchParams({
+            image: base64
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          const url = data.data.url;
+
+          document.getElementById("estado").innerText = "Imagen subida ✔";
+          
+          const img = document.getElementById("preview");
+          img.src = url;
+          img.style.display = "block";
+
+          console.log("URL:", url);
+
+          // 🔥 Aquí puedes guardar en Firebase si quieres
+        })
+        .catch(err => {
+          document.getElementById("estado").innerText = "Error al subir";
+          console.error(err);
+        });
+      };
+
+      reader.readAsDataURL(file);
+    }
+  </script>
+
+</body>
+</html>
+```
