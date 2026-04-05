@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <title>My V-Care</title>
 
-  <!-- Fuente bonita -->
+  <!-- Fuente -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 
   <style>
@@ -13,11 +13,11 @@
       margin: 0;
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      color: white;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      color: white;
     }
 
     .container {
@@ -25,41 +25,48 @@
       background: rgba(255,255,255,0.05);
       padding: 30px;
       border-radius: 20px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 25px rgba(0,0,0,0.6);
+      width: 300px;
     }
 
-    img.logo {
-      width: 200px;
+    .logo {
+      width: 180px;
       margin-bottom: 10px;
+      animation: fadeIn 1s ease;
     }
 
     h1 {
-      font-weight: 700;
       margin-bottom: 20px;
+      font-weight: 700;
     }
 
     .btn {
       background: linear-gradient(45deg, #00c6ff, #0072ff);
       border: none;
-      padding: 15px 30px;
-      font-size: 16px;
+      padding: 15px 25px;
       border-radius: 30px;
       color: white;
+      font-size: 16px;
       cursor: pointer;
       transition: 0.3s;
     }
 
     .btn:hover {
-      transform: scale(1.05);
+      transform: scale(1.07);
       box-shadow: 0 0 15px #00c6ff;
     }
 
-    #preview {
-      margin-top: 20px;
-      width: 200px;
-      border-radius: 10px;
+    input {
       display: none;
+    }
+
+    #preview {
+      width: 200px;
+      margin-top: 15px;
+      border-radius: 12px;
+      display: none;
+      animation: fadeIn 0.5s ease;
     }
 
     #estado {
@@ -67,78 +74,111 @@
       font-size: 14px;
     }
 
-    input {
+    .progress {
+      width: 100%;
+      background: rgba(255,255,255,0.2);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 10px;
       display: none;
+    }
+
+    .progress-bar {
+      height: 8px;
+      width: 0%;
+      background: #00c6ff;
+      transition: width 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
     }
   </style>
 </head>
+
 <body>
 
-  <div class="container">
-    <!-- 🔥 TU LOGO -->
-    <img src="LogoSinSlogan.png" class="logo">
+<div class="container">
 
-    <h1>My V-Care</h1>
+  <img src="LogoSinSlogan.png" class="logo">
+  <h1>My V-Care</h1>
 
-    <!-- Input oculto -->
-    <input type="file" id="imagen" accept="image/*">
+  <input type="file" id="imagen" accept="image/*">
 
-    <!-- Botón bonito -->
-    <button class="btn" onclick="document.getElementById('imagen').click()">
-      Agregar foto 📷
-    </button>
+  <button class="btn" id="btnSubir">Agregar foto 📷</button>
 
-    <p id="estado"></p>
-    <img id="preview">
-
+  <div class="progress" id="progress">
+    <div class="progress-bar" id="progressBar"></div>
   </div>
 
-  <script>
-    const API_KEY = "7c5016836a04a9f4ff6d6bad4d64f851";
+  <p id="estado"></p>
+  <img id="preview">
 
-    const input = document.getElementById("imagen");
+</div>
 
-    input.addEventListener("change", function() {
-      const file = input.files[0];
+<script>
+const API_KEY = "7c5016836a04a9f4ff6d6bad4d64f851";
 
-      if (!file) return;
+const boton = document.getElementById("btnSubir");
+const input = document.getElementById("imagen");
+const estado = document.getElementById("estado");
+const preview = document.getElementById("preview");
+const progress = document.getElementById("progress");
+const progressBar = document.getElementById("progressBar");
 
-      const reader = new FileReader();
+boton.addEventListener("click", () => {
+  input.click();
+});
 
-      reader.onload = function () {
-        const base64 = reader.result.split(',')[1];
+input.addEventListener("change", () => {
+  const file = input.files[0];
+  if (!file) return;
 
-        document.getElementById("estado").innerText = "Subiendo...";
+  const reader = new FileReader();
 
-        fetch("https://api.imgbb.com/1/upload?key=" + API_KEY, {
-          method: "POST",
-          body: new URLSearchParams({
-            image: base64
-          })
-        })
-        .then(res => res.json())
-        .then(data => {
-          const url = data.data.url;
+  reader.onload = function () {
+    const base64 = reader.result.split(',')[1];
 
-          document.getElementById("estado").innerText = "Imagen subida ✔";
+    estado.innerText = "Subiendo imagen...";
+    progress.style.display = "block";
+    progressBar.style.width = "30%";
 
-          const img = document.getElementById("preview");
-          img.src = url;
-          img.style.display = "block";
+    fetch("https://api.imgbb.com/1/upload?key=" + API_KEY, {
+      method: "POST",
+      body: new URLSearchParams({
+        image: base64
+      })
+    })
+    .then(res => {
+      progressBar.style.width = "70%";
+      return res.json();
+    })
+    .then(data => {
+      const url = data.data.url;
 
-          console.log("URL:", url);
+      progressBar.style.width = "100%";
 
-          // 🔥 AQUÍ puedes guardar en Firebase después
-        })
-        .catch(err => {
-          document.getElementById("estado").innerText = "Error al subir";
-          console.error(err);
-        });
-      };
+      estado.innerText = "Imagen subida correctamente ✔";
+      preview.src = url;
+      preview.style.display = "block";
 
-      reader.readAsDataURL(file);
+      console.log("URL:", url);
+
+      setTimeout(() => {
+        progress.style.display = "none";
+        progressBar.style.width = "0%";
+      }, 1000);
+    })
+    .catch(err => {
+      estado.innerText = "Error al subir ❌";
+      console.error(err);
     });
-  </script>
+  };
+
+  reader.readAsDataURL(file);
+});
+</script>
 
 </body>
 </html>
