@@ -3,30 +3,105 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Subir Imagen</title>
+  <title>My V-Care</title>
+
+  <!-- Fuente bonita -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      text-align: center;
+      background: rgba(255,255,255,0.05);
+      padding: 30px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    img.logo {
+      width: 200px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      background: linear-gradient(45deg, #00c6ff, #0072ff);
+      border: none;
+      padding: 15px 30px;
+      font-size: 16px;
+      border-radius: 30px;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px #00c6ff;
+    }
+
+    #preview {
+      margin-top: 20px;
+      width: 200px;
+      border-radius: 10px;
+      display: none;
+    }
+
+    #estado {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    input {
+      display: none;
+    }
+  </style>
 </head>
 <body>
 
-  <h2>Subir una foto</h2>
+  <div class="container">
+    <!-- 🔥 TU LOGO -->
+    <img src="LogoSinSlogan.png" class="logo">
 
-  <input type="file" id="imagen" accept="image/*">
-  <br><br>
-  <button onclick="subirImagen()">Subir Imagen</button>
+    <h1>My V-Care</h1>
 
-  <p id="estado"></p>
-  <img id="preview" width="200" style="display:none;"/>
+    <!-- Input oculto -->
+    <input type="file" id="imagen" accept="image/*">
+
+    <!-- Botón bonito -->
+    <button class="btn" onclick="document.getElementById('imagen').click()">
+      Agregar foto 📷
+    </button>
+
+    <p id="estado"></p>
+    <img id="preview">
+
+  </div>
 
   <script>
-    const API_KEY = "7c5016836a04a9f4ff6d6bad4d64f851"; // 🔥 PON TU API KEY AQUÍ
+    const API_KEY = "7c5016836a04a9f4ff6d6bad4d64f851";
 
-    function subirImagen() {
-      const input = document.getElementById("imagen");
+    const input = document.getElementById("imagen");
+
+    input.addEventListener("change", function() {
       const file = input.files[0];
 
-      if (!file) {
-        alert("Selecciona una imagen primero");
-        return;
-      }
+      if (!file) return;
 
       const reader = new FileReader();
 
@@ -46,14 +121,14 @@
           const url = data.data.url;
 
           document.getElementById("estado").innerText = "Imagen subida ✔";
-          
+
           const img = document.getElementById("preview");
           img.src = url;
           img.style.display = "block";
 
           console.log("URL:", url);
 
-          // 🔥 Aquí puedes guardar en Firebase si quieres
+          // 🔥 AQUÍ puedes guardar en Firebase después
         })
         .catch(err => {
           document.getElementById("estado").innerText = "Error al subir";
@@ -62,7 +137,7 @@
       };
 
       reader.readAsDataURL(file);
-    }
+    });
   </script>
 
 </body>
